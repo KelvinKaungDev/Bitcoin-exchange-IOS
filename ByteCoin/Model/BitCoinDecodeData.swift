@@ -15,4 +15,5 @@ struct BitCoinDecodeData : Codable {
 struct Rate : Codable {
     var rate : Double
     var time : String
+    var asset_id_quote : String
 }

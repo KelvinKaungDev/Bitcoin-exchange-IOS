@@ -5,8 +5,6 @@ class ViewController: UIViewController {
     @IBOutlet var userPick: UIPickerView!
     @IBOutlet var exchangeRate: UILabel!
     @IBOutlet var exchangeUnit: UILabel!
-    
-    let currencyArray = ["AUD","BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
         
     var bitCoin = CoinManager()
     
@@ -14,8 +12,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         bitCoin.delegate = self
+        userPick.dataSource = self
         userPick.delegate = self
-        bitCoin.fetchData()
     }
 }
 
@@ -27,11 +25,15 @@ extension ViewController : UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return currencyArray.count
+        return bitCoin.currencyArray.count
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return currencyArray[row]
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?{
+        return bitCoin.currencyArray[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        bitCoin.fetchData(for: bitCoin.currencyArray[row])
     }
 }
 
@@ -40,7 +42,10 @@ extension ViewController : UIPickerViewDataSource, UIPickerViewDelegate {
 extension ViewController : BitCoinData {
     func getBitCoinData(data: BitCoinDataCollections) {
         DispatchQueue.main.async {
-            self.exchangeRate.text = String(format: "%.1f", data.rate)
+            let i = data.exchange()
+            
+            self.exchangeRate.text = String(format: "%.1f", data.rate[i].rate)
+            self.exchangeUnit.text = data.currency
         }
     }
 }
